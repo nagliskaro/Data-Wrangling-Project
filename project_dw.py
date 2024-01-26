@@ -3,11 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# RQ: How does particle pollution from fine particulates (PM2.5) impact premature deaths in the European Union in the timespan from 2005 to 2020? 
-
+# RQ: What is the impact of these polluants (N02, O3, PM 2.5) on prematures deaths in Sassari (sardegna, Italya) and Milan (Lombardy, Italy)? And how do they compare ?
 # (sub questions) What is the impact of other particles like N02 and O3 compared to PM 2.5 ? What is the trend over the years?
 
-# RQ: What is the impact of these polluants (N02, O3, PM 2.5) on prematures deaths in Sassari (sardegna, Italya) and Milan (Lombardy, Italy)? And how do they compare ?
+
 
 def read_process_data(data_dir):
     # reading and cleaning PM 2.5 CSV
@@ -65,7 +64,7 @@ def analyze_data():
     df_milan = pd.read_csv("cleaned_data/milan.csv")
     df_sassari = pd.read_csv("cleaned_data/sassari.csv")
     
-    sassari_pol_group = df_sassari.groupby("Air Pollutant").mean("Air Pollution Average [ug/m3]")
+    sassari_pol_group = df_sassari.groupby("Air Pollutant")["Air Pollution Average [ug/m3]"].mean().to_frame('Average Pollution')
     print(sassari_pol_group.head())
 
 
