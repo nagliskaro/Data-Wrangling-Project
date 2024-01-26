@@ -7,7 +7,7 @@ import seaborn as sns
 
 # (sub questions) What is the impact of other particles like N02 and O3 compared to PM 2.5 ? What is the trend over the years?
 
-
+# RQ: What is the impact of these polluants (N02, O3, PM 2.5) on prematures deaths in Sassari (sardegna, Italya) and Milan (Lombardy, Italy)? And how do they compare ?
 
 def read_process_data(data_dir):
     # reading and cleaning PM 2.5 CSV
@@ -64,6 +64,9 @@ def analyze_data():
     df_polution = pd.read_csv("cleaned_data/combines_polluants.csv")
     df_milan = pd.read_csv("cleaned_data/milan.csv")
     df_sassari = pd.read_csv("cleaned_data/sassari.csv")
+    
+    sassari_pol_group = df_sassari.groupby("Air Pollutant").mean("Air Pollution Average [ug/m3]")
+    print(sassari_pol_group.head())
 
 
 def main():
