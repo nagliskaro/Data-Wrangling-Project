@@ -70,9 +70,8 @@ def analyze_data():
 
 
 def main():
-    
-    data_dir = "data_sets/"
-    read_process_data(data_dir)
+    # data_dir = "data_sets/"
+    # read_process_data(data_dir)
     
     analyze_data()
 
