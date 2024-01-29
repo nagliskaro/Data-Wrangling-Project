@@ -60,16 +60,39 @@ def read_process_data(data_dir):
 
 
 def analyze_data():
-    df_polution = pd.read_csv("cleaned_data/combines_polluants.csv")
-    df_milan = pd.read_csv("cleaned_data/milan.csv")
-    df_sassari = pd.read_csv("cleaned_data/sassari.csv")
+    df_polution = pd.read_csv("cleaned_data/combines_polluants.csv").dropna()
+    df_milan = pd.read_csv("cleaned_data/milan.csv").dropna()
+    df_sassari = pd.read_csv("cleaned_data/sassari.csv").dropna()
     
     sassari_group_mean = df_sassari.groupby("Air Pollutant").mean()
     print(sassari_group_mean)
 
     milan_group_mean = df_milan.groupby("Air Pollutant").mean()
     print(milan_group_mean)
+    
+    sassari_group_polluant_year = df_sassari.groupby(["Air Pollutant", 'Year'])[["Air Pollution Average [ug/m3]", "Premature Deaths"]].mean()
+    print(sassari_group_polluant_year)
 
+    # plotting
+    pollutants = df_sassari['Air Pollutant'].unique()
+    n_pollutants = len(pollutants)
+
+    plt.figure(figsize=(12, 4 * n_pollutants))
+
+    for i, pollutant in enumerate(pollutants, 1):
+        plt.subplot(n_pollutants, 1, i)
+        subset = sassari_group_polluant_year.loc[pollutant]
+
+        plt.plot(subset.index, subset['Air Pollution Average [ug/m3]'], label='Air Pollution')
+        plt.plot(subset.index, subset['Premature Deaths'], label='Premature Deaths', linestyle='--')
+
+        plt.title(f'Trends for {pollutant}')
+        plt.xlabel('Year')
+        plt.ylabel('Values')
+        plt.legend()
+
+    plt.tight_layout()
+    plt.show()
 
 def main():
     data_dir = "data_sets/"
