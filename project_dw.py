@@ -36,14 +36,14 @@ def read_process_data(data_dir):
     # read in Milan data
     dir_milan = "milan.csv"
     df_milan = pd.read_csv(data_dir+dir_milan)
-    df_milan = df_milan.drop(columns=["City Boundary Specification (LAU/grid)", 'Country Or Territory', 'City Code', 'Health Risk Scenario', 'Premature Deaths - lower CI', 'Premature Deaths - upper CI', 'Years Of Life Lost', 'Years Of Life Lost - lower CI', 'Years Of Life Lost - upper CI'])
+    df_milan = df_milan.drop(columns=["City Boundary Specification (LAU/grid)", 'Country Or Territory', 'City', 'City Code', 'Health Risk Scenario', 'Premature Deaths - lower CI', 'Premature Deaths - upper CI', 'Years Of Life Lost', 'Years Of Life Lost - lower CI', 'Years Of Life Lost - upper CI'])
     print(df_milan.head())
     df_milan.to_csv("cleaned_data/milan.csv", encoding='utf-8', index=False)
 
     # read in Sassari data
     dir_sassar = "sassari.csv"
     df_sassari = pd.read_csv(data_dir+dir_sassar)
-    df_sassari = df_sassari.drop(columns=["City Boundary Specification (LAU/grid)", 'Country Or Territory', 'City Code', 'Health Risk Scenario', 'Premature Deaths - lower CI', 'Premature Deaths - upper CI', 'Years Of Life Lost', 'Years Of Life Lost - lower CI', 'Years Of Life Lost - upper CI'])
+    df_sassari = df_sassari.drop(columns=["City Boundary Specification (LAU/grid)", 'Country Or Territory', 'City', 'City Code', 'Health Risk Scenario', 'Premature Deaths - lower CI', 'Premature Deaths - upper CI', 'Years Of Life Lost', 'Years Of Life Lost - lower CI', 'Years Of Life Lost - upper CI'])
     print(df_sassari.head())
     df_sassari.to_csv("cleaned_data/sassari.csv", encoding='utf-8', index=False)
     
@@ -64,13 +64,16 @@ def analyze_data():
     df_milan = pd.read_csv("cleaned_data/milan.csv")
     df_sassari = pd.read_csv("cleaned_data/sassari.csv")
     
-    sassari_pol_group = df_sassari.groupby("Air Pollutant")["Air Pollution Average [ug/m3]"].mean().to_frame('Average Pollution')
-    print(sassari_pol_group.head())
+    sassari_group_mean = df_sassari.groupby("Air Pollutant").mean()
+    print(sassari_group_mean)
+
+    milan_group_mean = df_milan.groupby("Air Pollutant").mean()
+    print(milan_group_mean)
 
 
 def main():
-    # data_dir = "data_sets/"
-    # read_process_data(data_dir)
+    data_dir = "data_sets/"
+    read_process_data(data_dir)
     
     analyze_data()
 
