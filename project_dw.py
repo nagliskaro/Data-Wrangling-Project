@@ -2,11 +2,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
 
 # RQ: What is the impact of these polluants (N02, O3, PM 2.5) on prematures deaths in Sassari (sardegna, Italya) and Milan (Lombardy, Italy)? And how do they compare ?
 # (sub questions) What is the impact of other particles like N02 and O3 compared to PM 2.5 ? What is the trend over the years?
-
-
 
 def read_process_data(data_dir):
     # reading and cleaning PM 2.5 CSV
@@ -85,15 +84,41 @@ def analyze_data():
 
         plt.plot(subset.index, subset['Air Pollution Average [ug/m3]'], label='Air Pollution')
         plt.plot(subset.index, subset['Premature Deaths'], label='Premature Deaths', linestyle='--')
+        
+        # added a correlation coefficient
+        correlation_coefficient = subset['Air Pollution Average [ug/m3]'].corr(subset['Premature Deaths'])
+        plt.text(0.5, 0.9, f'Correlation: {correlation_coefficient:.2f}', transform=plt.gca().transAxes, fontsize=12, ha='center')
 
         plt.title(f'Trends for {pollutant}')
         plt.xlabel('Year')
         plt.ylabel('Values')
         plt.legend()
-
+        plt.tight_layout()
+        
+    # linear regression for all pollutants:
+    plt.figure(figsize=(12, 4 * len(pollutants)))
+    for i, pollutant in enumerate(pollutants, 1):
+        plt.subplot(len(pollutants), 1, i)
+        
+        pollutant_data_sassari = df_sassari[df_sassari['Air Pollutant'] == pollutant][['Year', 'Air Pollution Average [ug/m3]', 'Premature Deaths']]
+        X = pollutant_data_sassari[['Air Pollution Average [ug/m3]']]
+        y = pollutant_data_sassari['Premature Deaths']
+        
+        model = LinearRegression()
+        model.fit(X, y)
+        
+        predictions = model.predict(X)
+        
+        plt.scatter(X, y, label='Actual Data', color='blue')
+        plt.plot(X, predictions, label='Linear Regression', color='red')
+        plt.title(f'Linear Regression: {pollutant} vs. Premature Deaths in Sassari')
+        plt.xlabel(f'{pollutant} Air Pollution Average [ug/m3]')
+        plt.ylabel('Premature Deaths')
+        plt.legend()
+        
     plt.tight_layout()
     plt.show()
-
+    
 def main():
     data_dir = "data_sets/"
     read_process_data(data_dir)
