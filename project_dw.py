@@ -86,12 +86,37 @@ def analyze_data():
     n_pollutants_milan = len(pollutants_milan)
 
 
+    #Sum of premature deaths: Milan, Sassari, Italy
+
+
+    # Milan
+    
+    pm25_deaths_milan = df_milan[df_milan['Air Pollutant'] == 'PM2.5'].groupby('Year')['Premature Deaths'].sum()
+    pm25_deaths_sassari = df_sassari[df_sassari['Air Pollutant'] == 'PM2.5'].groupby('Year')['Premature Deaths'].sum()
+
+    print(pm25_deaths_milan)
+    plt.figure(figsize=(10, 6))
+    plt.plot(pm25_deaths_milan.index, pm25_deaths_milan, color='green')
+    plt.fill_between(pm25_deaths_milan.index, pm25_deaths_milan, color="green")
+    
+    plt.plot(pm25_deaths_sassari.index, pm25_deaths_sassari, color="red")
+    plt.fill_between(pm25_deaths_sassari.index, pm25_deaths_sassari, color="red")
+     
+    plt.title('Progression of Premature Deaths Due to PM2.5 Over the Years in Milan')
+    plt.xlabel('Year')
+    plt.ylabel('Sum of Premature Deaths')
+    plt.grid(True)  # Add grid for better readability
+    plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
+    plt.tight_layout()
+    
+    
+
     plt.figure(figsize=(12, 4 * n_pollutants))
     
     for i, pollutant in enumerate(pollutants, 1):
         plt.subplot(n_pollutants_milan, 1, i)
         subset_milan = milan_group_polluant_year.loc[pollutant]
-        print(subset_milan)
+        #print(subset_milan)
 
         plt.plot(subset_milan.index, subset_milan['Air Pollution Population Weighted Average [ug/m3]'], label='Air Pollution')
         plt.plot(subset_milan.index, subset_milan['Premature Deaths'], label='Premature Deaths', linestyle='--')
@@ -107,7 +132,7 @@ def analyze_data():
     for i, pollutant in enumerate(pollutants, 1):
         plt.subplot(n_pollutants, 1, i)
         subset = sassari_group_polluant_year.loc[pollutant]
-        print(subset)
+        #print(subset)
 
         plt.plot(subset.index, subset['Air Pollution Population Weighted Average [ug/m3]'], label='Air Pollution')
         plt.plot(subset.index, subset['Premature Deaths'], label='Premature Deaths', linestyle='--')
@@ -124,6 +149,7 @@ def analyze_data():
         
         
     # linear regression for all pollutants:
+        
     plt.figure(figsize=(12, 4 * n_pollutants))
     
     for i, pollutant in enumerate(pollutants, 1):
@@ -145,9 +171,10 @@ def analyze_data():
         plt.ylabel('Premature Deaths')
         plt.legend()
         plt.tight_layout()
-        
+    plt.show()
     # Plotting Milan info: Air Pollutants and Premature Deaths
-     
+    
+
 def main():
     data_dir = "data_sets/"
     read_process_data(data_dir)
