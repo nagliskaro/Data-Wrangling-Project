@@ -58,13 +58,23 @@ def read_process_data(data_dir):
         df_city = pd.read_csv(data_dir+"europe_cities_pm25/"+i+".csv")
         df_city = df_city.drop(columns=["City Boundary Specification (LAU/grid)", 'Country Or Territory', 'City Code', 'Health Risk Scenario', "Air Pollution Average [ug/m3]", 'Premature Deaths - lower CI', 'Premature Deaths - upper CI', 'Years Of Life Lost', 'Years Of Life Lost - lower CI', 'Years Of Life Lost - upper CI'])
         df_city.to_csv("cleaned_data/europe_cities_pm25/"+i+".csv", encoding='utf-8', index=False)
+
+    # merging european cities csv's
+    dir_list = ["milan", "berlin", "paris", "warsaw", "amsterdam", "dublin", "ljubljana", "stockholm", "zagreb", "helsinki"]
+    all_cities_df = []
+    for city in dir_list:
+        df_city = pd.read_csv("cleaned_data/europe_cities_pm25/"+city+".csv")
+        df_city['City'] = city 
+        all_cities_df.append(df_city)
+        
+    merged_df = pd.concat(all_cities_df, ignore_index=True)
+    merged_df.to_csv("cleaned_data/merged_european_cities_data.csv", index=False)
         
 
 
 def analyze_data():
     df_polution = pd.read_csv("cleaned_data/combines_polluants.csv").dropna()
     df_milan = pd.read_csv("cleaned_data/milan.csv").dropna()
-    #print(df_milan)
     df_sassari = pd.read_csv("cleaned_data/sassari.csv").dropna()
     
     sassari_group_mean = df_sassari.groupby("Air Pollutant").mean()
@@ -84,10 +94,9 @@ def analyze_data():
     milan_group_polluant_year = df_milan.groupby(["Air Pollutant", 'Year'])[["Air Pollution Population Weighted Average [ug/m3]", "Premature Deaths"]].mean()
     pollutants_milan = df_milan['Air Pollutant'].unique()
     n_pollutants_milan = len(pollutants_milan)
-
+    
 
     plt.figure(figsize=(12, 4 * n_pollutants))
-    
     for i, pollutant in enumerate(pollutants, 1):
         plt.subplot(n_pollutants_milan, 1, i)
         subset_milan = milan_group_polluant_year.loc[pollutant]
@@ -147,7 +156,8 @@ def analyze_data():
     plt.show()
     
     # plotting main european cities
-        
+    
+    
     # Plotting Milan info: Air Pollutants and Premature Deaths
     
 def main():
