@@ -107,12 +107,9 @@ def analyze_data():
     milan_group_polluant_year = df_milan.groupby(["Air Pollutant", 'Year'])[["Air Pollution Population Weighted Average [ug/m3]", "Premature Deaths"]].mean()
     pollutants_milan = df_milan['Air Pollutant'].unique()
     n_pollutants_milan = len(pollutants_milan)
-    
-
-    #Sum of premature deaths: Milan, Sassari, Italy
 
 
-    # Milan
+    # Italy, Milan and Sassari death rate due to pm2.5
     
     pm25_deaths_italy = pd.read_csv("cleaned_data/italy_deaths_pm25.csv")
     pm25_italy_done = pm25_deaths_italy.groupby('Year')["Premature Deaths"].sum()
@@ -122,17 +119,17 @@ def analyze_data():
     pm25_deaths_sassari = df_sassari[df_sassari['Air Pollutant'] == 'PM2.5'].groupby('Year')['Premature Deaths'].sum()
     #print(pm25_deaths_sassari)
     
-    
+    #Plotting Italy, Milan and Sassari
     
     plt.figure(figsize=(10, 6))
     plt.plot(pm25_deaths_milan.index, pm25_deaths_milan, color='red', zorder=5)
-    plt.fill_between(pm25_deaths_milan.index, pm25_deaths_milan, color="red", zorder=5)
+    plt.fill_between(pm25_deaths_milan.index, pm25_deaths_milan, label="Milan", color="red", zorder=5)
     
     plt.plot(pm25_deaths_sassari.index, pm25_deaths_sassari, color="green")
-    plt.fill_between(pm25_deaths_sassari.index, pm25_deaths_sassari, color="green", zorder=3)
+    plt.fill_between(pm25_deaths_sassari.index, pm25_deaths_sassari, color="green", zorder=3, )
     
     plt.plot(pm25_italy_done.index, pm25_italy_done, color="blue")
-    plt.fill_between(pm25_italy_done.index, pm25_italy_done, color="blue")
+    plt.fill_between(pm25_italy_done.index, pm25_italy_done, label="Italy", color="blue")
     
     plt.title('Progression of Premature Deaths Due to PM2.5 Over the Years in Milan and Italy')
     plt.xlabel('Year')
@@ -140,8 +137,14 @@ def analyze_data():
     plt.grid(True)  # Add grid for better readability
     plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
     plt.tight_layout()
-    
+    plt.legend()
     plt.show()
+    
+    #converting to png
+    
+
+    
+    
     
     plt.figure(figsize=(12, 4 * n_pollutants))
     for i, pollutant in enumerate(pollutants, 1):
@@ -167,10 +170,6 @@ def analyze_data():
 
         plt.plot(subset.index, subset['Air Pollution Population Weighted Average [ug/m3]'], label='Air Pollution')
         plt.plot(subset.index, subset['Premature Deaths'], label='Premature Deaths', linestyle='--')
-        
-        # added a correlation coefficient
-        correlation_coefficient = subset['Air Pollution Population Weighted Average [ug/m3]'].corr(subset['Premature Deaths'])
-        plt.text(0.5, 0.9, f'Correlation: {correlation_coefficient:.2f}', transform=plt.gca().transAxes, fontsize=12, ha='center')
 
         plt.title(f'Trends for {pollutant} Sassari')
         plt.xlabel('Year')
