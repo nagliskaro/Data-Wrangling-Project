@@ -201,14 +201,23 @@ def analyze_data():
         plt.ylabel('Premature Deaths')
         plt.legend()
         plt.tight_layout()
-    plt.show()
-
-    # Plotting Milan info: Air Pollutants and Premature Deaths
-    
-
-
     
     # plotting main european cities
+    data = pd.read_csv("cleaned_data/merged_european_cities_data.csv")
+    pivoted_data = data.pivot(index='Year', columns='City', values='Air Pollution Population Weighted Average [ug/m3]')
+        
+    # Plotting
+    plt.figure(figsize=(12, 6))
+    for city in pivoted_data.columns:
+        plt.plot(pivoted_data.index, pivoted_data[city], label=city)
+
+    plt.xlabel('Year')
+    plt.ylabel('Air Pollution Population Weighted Average [ug/m3]')
+    plt.title('Air Pollution Population Weighted Average Over Years by City')
+    plt.legend(loc='upper right', bbox_to_anchor=(1, 1.1))
+    plt.grid(True)
+    
+    plt.show()
     
     
     # Plotting Milan info: Air Pollutants and Premature Deaths
