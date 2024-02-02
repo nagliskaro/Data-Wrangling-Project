@@ -86,21 +86,16 @@ def read_process_data(data_dir):
 
 
 def analyze_data():
-    df_polution = pd.read_csv("cleaned_data/combines_polluants.csv").dropna()
+    # df_polution = pd.read_csv("cleaned_data/combines_polluants.csv").dropna()
     df_milan = pd.read_csv("cleaned_data/milan.csv").dropna()
     df_sassari = pd.read_csv("cleaned_data/sassari.csv").dropna()
-    
-    sassari_group_mean = df_sassari.groupby("Air Pollutant").mean()
-    #print(sassari_group_mean)
-    
-    milan_group_mean = df_milan.groupby("Air Pollutant").mean()
-    #print(milan_group_mean)
     
     sassari_group_polluant_year = df_sassari.groupby(["Air Pollutant", 'Year'])[["Air Pollution Population Weighted Average [ug/m3]", "Premature Deaths"]].mean()
     #print(sassari_group_polluant_year)
 
     # plotting Sassari Air Pollutants and Number of Premature Deaths
     pollutants = df_sassari['Air Pollutant'].unique()
+    print(pollutants)
     n_pollutants = len(pollutants)
     
     #milan
@@ -110,18 +105,14 @@ def analyze_data():
 
 
     # Italy, Milan and Sassari death rate due to pm2.5
-    
     pm25_deaths_italy = pd.read_csv("cleaned_data/italy_deaths_pm25.csv")
     pm25_italy_done = pm25_deaths_italy.groupby('Year')["Premature Deaths"].sum()
-    
     pm25_deaths_milan = df_milan[df_milan['Air Pollutant'] == 'PM2.5'].groupby('Year')['Premature Deaths'].sum()
-    
     pm25_deaths_sassari = df_sassari[df_sassari['Air Pollutant'] == 'PM2.5'].groupby('Year')['Premature Deaths'].sum()
-    #print(pm25_deaths_sassari)
     
     #Plotting Italy, Milan and Sassari
-    
     plt.figure(figsize=(10, 6))
+    
     plt.plot(pm25_deaths_milan.index, pm25_deaths_milan, color='red', zorder=5)
     plt.fill_between(pm25_deaths_milan.index, pm25_deaths_milan, label="Milan", color="red", zorder=5)
     
@@ -141,19 +132,13 @@ def analyze_data():
     plt.show()
     
     #converting to png
-    
-
-    
-    
-    
     plt.figure(figsize=(12, 4 * n_pollutants))
     for i, pollutant in enumerate(pollutants, 1):
         plt.subplot(n_pollutants_milan, 1, i)
-        subset_milan = milan_group_polluant_year.loc[pollutant]
-        #print(subset_milan)
+        subset = milan_group_polluant_year.loc[pollutant]
 
-        plt.plot(subset_milan.index, subset_milan['Air Pollution Population Weighted Average [ug/m3]'], label='Air Pollution')
-        plt.plot(subset_milan.index, subset_milan['Premature Deaths'], label='Premature Deaths', linestyle='--')
+        plt.plot(subset.index, subset['Air Pollution Population Weighted Average [ug/m3]'], label='Air Pollution')
+        plt.plot(subset.index, subset['Premature Deaths'], label='Premature Deaths', linestyle='--')
 
         plt.title(f'Trends for {pollutant} Milan')
         plt.xlabel('Year')
@@ -162,11 +147,9 @@ def analyze_data():
         plt.tight_layout()
     
     plt.figure(figsize=(12, 4 * n_pollutants))
-
     for i, pollutant in enumerate(pollutants, 1):
         plt.subplot(n_pollutants, 1, i)
         subset = sassari_group_polluant_year.loc[pollutant]
-        #print(subset)
 
         plt.plot(subset.index, subset['Air Pollution Population Weighted Average [ug/m3]'], label='Air Pollution')
         plt.plot(subset.index, subset['Premature Deaths'], label='Premature Deaths', linestyle='--')
@@ -180,7 +163,6 @@ def analyze_data():
     # linear regression for all pollutants:
         
     plt.figure(figsize=(12, 4 * n_pollutants))
-    
     for i, pollutant in enumerate(pollutants, 1):
         plt.subplot(len(pollutants), 1, i)
         
@@ -202,8 +184,8 @@ def analyze_data():
         plt.tight_layout()
     
     # plotting main european cities
-    data = pd.read_csv("cleaned_data/merged_european_cities_data.csv")
-    pivoted_data = data.pivot(index='Year', columns='City', values='Air Pollution Population Weighted Average [ug/m3]')
+    eur_city = pd.read_csv("cleaned_data/merged_european_cities_data.csv")
+    pivoted_data = eur_city.pivot(index='Year', columns='City', values='Air Pollution Population Weighted Average [ug/m3]')
         
     # Plotting
     plt.figure(figsize=(12, 6))
