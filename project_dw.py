@@ -102,36 +102,30 @@ def analyze_data():
     milan_group_polluant_year = df_milan.groupby(["Air Pollutant", 'Year'])[["Air Pollution Population Weighted Average [ug/m3]", "Premature Deaths"]].mean()
     pollutants_milan = df_milan['Air Pollutant'].unique()
     n_pollutants_milan = len(pollutants_milan)
+    
 
-
-    # Italy, Milan and Sassari death rate due to pm2.5
-    pm25_deaths_italy = pd.read_csv("cleaned_data/italy_deaths_pm25.csv")
-    pm25_italy_done = pm25_deaths_italy.groupby('Year')["Premature Deaths"].sum()
-    pm25_deaths_milan = df_milan[df_milan['Air Pollutant'] == 'PM2.5'].groupby('Year')['Premature Deaths'].sum()
-    pm25_deaths_sassari = df_sassari[df_sassari['Air Pollutant'] == 'PM2.5'].groupby('Year')['Premature Deaths'].sum()
+    # Italy and Milan death rate due to pm2.5
+    pm25_deaths_it = pd.read_csv("cleaned_data/italy_deaths_pm25.csv")
+    pm25_deaths_italy = pd.DataFrame(pm25_deaths_it)
+    pm25_deaths_italy.rename(columns={"Premature Deaths": "Premature Deaths Italy"}, inplace=True)
+    #print(pm25_deaths_italy)
+    merged = pm25_deaths_italy.merge(df_milan, how='outer')    
+    merged_drop = merged.drop(columns=['Total City Population *', 'Populated Area [km2]', 'Air Pollution Average [ug/m3]', 'Air Pollution Population Weighted Average [ug/m3]'])
+    deaths_pm25 = merged_drop[merged_drop['Air Pollutant'] == 'PM2.5']
+    deaths_pm25.drop(columns=['Air Pollutant'])
+    print(deaths_pm25)
     
-    #Plotting Italy, Milan and Sassari
-    plt.figure(figsize=(10, 6))
-    
-    plt.plot(pm25_deaths_milan.index, pm25_deaths_milan, color='red', zorder=5)
-    plt.fill_between(pm25_deaths_milan.index, pm25_deaths_milan, label="Milan", color="red", zorder=5)
-    
-    plt.plot(pm25_deaths_sassari.index, pm25_deaths_sassari, color="green")
-    plt.fill_between(pm25_deaths_sassari.index, pm25_deaths_sassari, color="green", zorder=3, )
-    
-    plt.plot(pm25_italy_done.index, pm25_italy_done, color="blue")
-    plt.fill_between(pm25_italy_done.index, pm25_italy_done, label="Italy", color="blue")
-    
-    plt.title('Progression of Premature Deaths Due to PM2.5 Over the Years in Milan and Italy')
-    plt.xlabel('Year')
-    plt.ylabel('Sum of Premature Deaths')
-    plt.grid(True)  # Add grid for better readability
-    plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
-    plt.tight_layout()
+    #Graphing 
+    plt.figure(figsize=(10, 5))
+    plt.bar(deaths_pm25['Year'], deaths_pm25['Premature Deaths Italy'], label='Italy', color='green' )
+    plt.bar(deaths_pm25['Year'], deaths_pm25['Premature Deaths'], label='Milan', color='red' )
+    plt.title('Premature deaths Italy and Milan due to PM2.5')
     plt.legend()
-    plt.show()
-    
-    #converting to png
+    plt.xlabel('Year')
+    plt.tight_layout()
+    plt.xticks(deaths_pm25['Year'])
+
+
     plt.figure(figsize=(12, 4 * n_pollutants))
     for i, pollutant in enumerate(pollutants, 1):
         plt.subplot(n_pollutants_milan, 1, i)
@@ -145,6 +139,8 @@ def analyze_data():
         plt.ylabel('Values')
         plt.legend()
         plt.tight_layout()
+        
+
     
     plt.figure(figsize=(12, 4 * n_pollutants))
     for i, pollutant in enumerate(pollutants, 1):
@@ -198,8 +194,7 @@ def analyze_data():
     plt.legend(loc='upper right', bbox_to_anchor=(1, 1.1))
     plt.grid(True)
     
-    plt.show()
-    
+    plt.show()    
     
     # Plotting Milan info: Air Pollutants and Premature Deaths
     
